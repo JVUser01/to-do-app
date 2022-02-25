@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="./images/favicon-32x32.png">
+  <link rel="stylesheet" href="assets/css/style.css"/>
+  <title>To Do List app</title>
+</head>
+
+<body>
+  <header class="header">
+    <div class="header__content">
+      <div class="header__title-area">
+        <h1 class="header__title">TODO</h1>
+        <img class="header__theme-icon" src="images/icon-sun.svg" alt="Change theme"/>
+      </div>
+
+      
+      <div class="header__input">
+        <div class="header__input__check"></div>
+        <input class="header__input__field" type="text" placeholder="Create a new todo..."/>
+      </div>
+    </div>
+  </header>
+  
+  <div class="todo-list-area">
+    <div class="todo-list">
+      <div class="todo-list__footer">
+        <div class="todo-list__items-counter">5 items left</div>
+        
+        <div class="todo-list__filters">
+          <div class="todo-list__filter todo-list__filter--active">All</div>
+          <div class="todo-list__filter">Active</div>
+          <div class="todo-list__filter">Completed</div>
+        </div>
+
+        <div class="todo-list__clear-completed">Clear Completed</div>
+      </div>
+    </div>
+
+    <div class="todo-list-area__drag-info">
+      Drag and drop to reorder list
+    </div>
+  </div>
+
+  <div class="item-example">
+    <div class="todo-list__item">
+      <div class="todo-list__check">
+        <div class="todo-list__check-hover-item"></div>
+        <div class="todo-list__check-bg"></div>
+        <img class="todo-list__check-icon" src="images/icon-check.svg" alt="Check icon">
+      </div>
+      <div class="todo-list__text">Jog around the park 3x</div>
+      <img class="todo-list__delete-icon" src="images/icon-cross.svg" alt="Delete item">
+    </div>
+  </div>
+
+  <div class="attribution">
+    Challenge by <a href="https://www.frontendmentor.io?ref=challenge" target="_blank">Frontend Mentor</a>. 
+    Coded by <a href="https://github.com/JVUser01">João Vitor</a>.
+  </div>
+
+  <script src="assets/js/script.js"></script>
+</body>
+</html>
