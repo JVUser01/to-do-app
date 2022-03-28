@@ -33,6 +33,12 @@
 
 
 
+.item-example {
+    display: none;
+}
+
+
+
 .header {
     height: 300px;
     background: url("../../images/bg-desktop-dark.jpg") no-repeat center;
@@ -141,11 +147,12 @@
 }
 
 .todo-list__item {
-    height: 64px;
+    min-height: 64px;
     background-color: var(--very-dark-desaturated-blue);
     display: flex;
     align-items: center;
     border-bottom: 1px solid var(--very-dark-grayish-blue-dark-theme-secondary);
+    padding: 10px 0;
 }
 
 .todo-list__item--light {
@@ -153,8 +160,24 @@
     border-bottom-color: var(--light-grayish-blue-light-theme);
 }
 
+.todo-list__item:hover:not(.todo-list__item--selected) .todo-list__check-hover-item {
+    opacity: 1;
+}
+
 .todo-list__item:first-child {
     border-radius: 5px 5px 0 0;
+}
+
+.todo-list__item--dragging {
+    background-color: #212337;
+}
+
+.todo-list__item--light.todo-list__item--dragging {
+    background-color: #fafafa;
+}
+
+.todo-list__item--dragging-item-hover {
+    border-top: 1px solid var(--bright-blue);
 }
 
 .todo-list__check {
@@ -198,12 +221,16 @@
     border-radius: 50%;
 }
 
+.todo-list__check:not(.todo-list__check--checked) .todo-list__check-bg.todo-list__check-bg--dragging {
+    background-color: #212337;
+}
+
 .todo-list__check:not(.todo-list__check--checked) .todo-list__check-bg--light {
     background-color: #fff;
 }
 
-.todo-list__item:hover:not(.todo-list__item--selected) .todo-list__check-hover-item {
-    opacity: 1;
+.todo-list__check:not(.todo-list__check--checked) .todo-list__check-bg--light.todo-list__check-bg--dragging {
+    background-color: #ebebeb;
 }
 
 .todo-list__check-icon {
@@ -214,6 +241,7 @@
     width: 75%;
     cursor: pointer;
     color: var(--light-grayish-blue-dark-theme);
+    word-break: break-word;
 }
 
 .todo-list__text--light {
@@ -225,8 +253,16 @@
     color: var(--very-dark-grayish-blue-dark-theme);
 }
 
-.todo-list__text--selected .todo-list__text--light {
+.todo-list__text--light.todo-list__text--selected {
     color: var(--light-grayish-blue-light-theme);
+}
+
+.todo-list__text--dragging {
+    color: #8b8ea4;
+}
+
+.todo-list__text--light.todo-list__text--dragging {
+    color: #84858d;
 }
 
 .todo-list__delete-icon {
@@ -325,12 +361,6 @@
 
 
 
-.item-example {
-    display: none;
-}
-
-
-
 .attribution {
     font-size: 11px; text-align: center;
 }
@@ -397,7 +427,7 @@
     }
 
     .todo-list__item {
-        height: 52px;
+        min-height: 52px;
     }
 
     .todo-list__check {
