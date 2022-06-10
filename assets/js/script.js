@@ -14,6 +14,8 @@ document.querySelectorAll(".todo-list__item").forEach(item => {
     item.addEventListener("dragover", dragOver);
     item.addEventListener("dragleave", dragLeave);
     item.addEventListener("drop", drop);
+    item.addEventListener("touchmove", dragItemTouch);
+    item.addEventListener("touchend", dropItemTouch);
 });
 
 function changeTheme() {
@@ -56,13 +58,13 @@ function changeTheme() {
     document.querySelector(".todo-list-area__drag-info").classList.toggle("todo-list-area__drag-info--light");
 }
 
-function createNewToDo(event) {
-    if(event.key == "Enter") {
+function createNewToDo(evt) {
+    if(evt.key == "Enter") {
         let newToDoItem = document.querySelector(".item-example .todo-list__item").cloneNode(true);
-        newToDoItem.querySelector(".todo-list__text").innerHTML = event.currentTarget.value;
+        newToDoItem.querySelector(".todo-list__text").innerHTML = evt.currentTarget.value;
         let lastItem = document.querySelector(".todo-list").lastElementChild;
         document.querySelector(".todo-list").insertBefore(newToDoItem, lastItem);
-        event.currentTarget.value = "";
+        evt.currentTarget.value = "";
         newToDoItem.querySelector(".todo-list__delete-icon").addEventListener("click", removeItem);
         newToDoItem.querySelector(".todo-list__text").addEventListener("click", checkUncheckItem);
         newToDoItem.querySelector(".todo-list__check").addEventListener("click", checkUncheckItem);
@@ -72,6 +74,8 @@ function createNewToDo(event) {
         newToDoItem.addEventListener("dragover", dragOver);
         newToDoItem.addEventListener("dragleave", dragLeave);
         newToDoItem.addEventListener("drop", drop);
+        newToDoItem.addEventListener("touchmove", dragItemTouch);
+        newToDoItem.addEventListener("touchend", dropItemTouch);
 
         showHideFooter();
         updateRemainingItemCounter();
@@ -80,8 +84,8 @@ function createNewToDo(event) {
     }
 }
 
-function removeItem(event) {
-    event.currentTarget.parentElement.remove();
+function removeItem(evt) {
+    evt.currentTarget.parentElement.remove();
     showHideFooter();
     updateRemainingItemCounter();
     storeItems();
@@ -101,8 +105,8 @@ function updateRemainingItemCounter() {
     document.querySelector(".todo-list__items-counter").innerHTML = `${numberOfUncheckedItems} items left`;
 }
 
-function checkUncheckItem(event) {
-    let item = event.currentTarget.parentElement;
+function checkUncheckItem(evt) {
+    let item = evt.currentTarget.parentElement;
     if(item.classList.contains("todo-list__item--selected")) {
         item.classList.remove("todo-list__item--selected");
         item.querySelector(".todo-list__check").classList.remove("todo-list__check--checked");
@@ -119,9 +123,9 @@ function checkUncheckItem(event) {
     storeItems();
 }
 
-function filterItems(event) {
+function filterItems(evt) {
     document.querySelector(".todo-list__filter--active").classList.remove("todo-list__filter--active");
-    event.currentTarget.classList.add("todo-list__filter--active");
+    evt.currentTarget.classList.add("todo-list__filter--active");
     updateFilteredItems();
 }
 
@@ -228,33 +232,102 @@ function retrieveItems(storedItems) {
     updateRemainingItemCounter();
 }
 
-function dragStart(event) {
-    event.currentTarget.classList.add("todo-list__item--dragging");
-    event.currentTarget.querySelector(".todo-list__check-bg").classList.add("todo-list__check-bg--dragging");
-    if(!event.currentTarget.querySelector(".todo-list__text").classList.contains("todo-list__text--selected")) {
-        event.currentTarget.querySelector(".todo-list__text").classList.add("todo-list__text--dragging");
+function dragStart(evt) {
+    evt.currentTarget.classList.add("todo-list__item--dragging");
+    evt.currentTarget.querySelector(".todo-list__check-bg").classList.add("todo-list__check-bg--dragging");
+    if(!evt.currentTarget.querySelector(".todo-list__text").classList.contains("todo-list__text--selected")) {
+        evt.currentTarget.querySelector(".todo-list__text").classList.add("todo-list__text--dragging");
     }
 }
 
-function dragEnd(event) {
-    event.currentTarget.classList.remove("todo-list__item--dragging");
-    event.currentTarget.querySelector(".todo-list__check-bg").classList.remove("todo-list__check-bg--dragging");
-    event.currentTarget.querySelector(".todo-list__text").classList.remove("todo-list__text--dragging");
+function dragEnd(evt) {
+    evt.currentTarget.classList.remove("todo-list__item--dragging");
+    evt.currentTarget.querySelector(".todo-list__check-bg").classList.remove("todo-list__check-bg--dragging");
+    evt.currentTarget.querySelector(".todo-list__text").classList.remove("todo-list__text--dragging");
 }
 
-function dragOver(event) {
-    event.preventDefault();
-    event.currentTarget.classList.add("todo-list__item--dragging-item-hover");
+function dragOver(evt) {
+    evt.preventDefault();
+    evt.currentTarget.classList.add("todo-list__item--dragging-item-hover");
 }
 
-function dragLeave(event) {
-    event.currentTarget.classList.remove("todo-list__item--dragging-item-hover");
+function dragLeave(evt) {
+    evt.currentTarget.classList.remove("todo-list__item--dragging-item-hover");
 }
 
-function drop(event) {
+function drop(evt) {
     let dropedItem = document.querySelector(".todo-list__item--dragging");
-    let otherItem = event.currentTarget;
+    let otherItem = evt.currentTarget;
     otherItem.classList.remove("todo-list__item--dragging-item-hover");
     otherItem.parentElement.insertBefore(dropedItem, otherItem);
     storeItems();
+}
+
+function dragItemTouch(evt) {
+    document.body.style.overflow = "hidden";
+    
+    let touch = evt.touches[0];
+    let item = evt.currentTarget;
+
+    let itemClone = document.querySelector(".todo-list__item-clone");
+    if(itemClone == null) {
+        itemClone = item.cloneNode(true);
+        itemClone.classList.add("todo-list__item-clone");
+        item.parentElement.appendChild(itemClone);
+    }
+    
+
+    let rightSideOfItem = touch.pageX + item.clientWidth/2;
+    let leftSideOfItem = touch.pageX - item.clientWidth/2;
+
+    if(rightSideOfItem < screen.width && leftSideOfItem > 0) {
+        itemClone.style.top = touch.pageY - (item.clientHeight / 2) + "px";
+        itemClone.style.left = touch.pageX - (item.clientWidth / 2) + "px";
+    } else {
+        itemClone.style.top = touch.pageY - (item.clientHeight / 2) + "px";
+    }
+    
+
+    let itemPositionY = itemClone.getBoundingClientRect().top + (itemClone.clientHeight / 2);
+    let itemPositionX = itemClone.getBoundingClientRect().left + (itemClone.clientWidth / 2);
+
+    item.classList.add("todo-list__item--dragging");
+    item.querySelector(".todo-list__check-bg").classList.add("todo-list__check-bg--dragging");
+    if(!item.querySelector(".todo-list__text").classList.contains("todo-list__text--selected")) {
+        item.querySelector(".todo-list__text").classList.add("todo-list__text--dragging");
+    }
+
+    let dropAreas = document.querySelectorAll(".todo-list .todo-list__item:not(.todo-list__item--dragging, .todo-list__item-clone)");
+
+    dropAreas.forEach(dropArea => {
+        let dropAreaPosition = dropArea.getBoundingClientRect();
+        if(itemPositionX >= dropAreaPosition.left && itemPositionX <= dropAreaPosition.right &&
+        itemPositionY >= dropAreaPosition.top && itemPositionY <= dropAreaPosition.bottom) {
+            dropArea.classList.add("todo-list__item--dragging-item-hover");
+        } else {
+            dropArea.classList.remove("todo-list__item--dragging-item-hover");
+        }
+    })
+}
+
+function dropItemTouch() {
+    let item = document.querySelector(".todo-list__item--dragging");
+    let dropArea = document.querySelector(".todo-list__item--dragging-item-hover");
+    let itemClone = document.querySelector(".todo-list__item-clone");
+
+    if(item != null) {
+        item.classList.remove("todo-list__item--dragging");
+        item.querySelector(".todo-list__check-bg").classList.remove("todo-list__check-bg--dragging");
+        item.querySelector(".todo-list__text").classList.remove("todo-list__text--dragging");
+
+        if(dropArea != null) {
+            dropArea.classList.remove("todo-list__item--dragging-item-hover");
+            dropArea.parentElement.insertBefore(item, dropArea);
+        }
+
+        itemClone.remove();
+        storeItems();
+    }
+    
+    document.body.style = "";
 }
